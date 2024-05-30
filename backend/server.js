@@ -1,26 +1,22 @@
 const express = require("express");
-const { chats } = require("./data/data");
-const connectDB = require("./config/db");
 const dotenv = require("dotenv").config();
+const connectDB = require("./config/db");
+const userRoutes = require("./routes/userRoutes");
+const { errorHandler } = require("./middleware/errorMiddleware");
+
 connectDB();
 
 const app = express();
+app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Api created");
+  res.send("API is running successfully");
 });
 
-app.get("/api/chats", (req, res) => {
-  res.send(chats);
-});
+app.use("/api/user", userRoutes);
 
-app.get("/api/chats/:id", (req, res) => {
-  //   console.log(req.params.id);
-  const singleChat = chats.find((chat) => chat._id === req.params.id);
-  console.log(singleChat);
-  res.send(singleChat);
-});
+// Error handling middleware
+app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
-
-app.listen(port, console.log("server is running" + port));
+app.listen(port, () => console.log(`Server is running on port ${port}`));
